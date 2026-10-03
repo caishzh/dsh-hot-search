@@ -1,0 +1,70 @@
+name: Publish to npm
+
+# 发布由 tag 触发：改完 package.json 的 version，打一个一致的 v* tag 推上来即可。
+# 认证走 npm 的 trusted publishing（OIDC）——仓库里不存任何 npm token，
+# npm 侧校验的是「本仓库 + 本文件名 publish.yml」这一对，所以文件名不能改，
+# 改了就必须去 npmjs.com 删掉旧配置重建。
+#
+# 首次配置：npmjs.com → 该包 → Settings → Trusted publishing → GitHub Actions
+#   Organization or user : caishzh
+#   Repository           : dsh-hot-search
+#   Workflow filename    : publish.yml
+#   Allowed actions      : 勾上 npm publish（按需再勾 npm dist-tag）
+# npm 保存时不校验这些字段，填错了只会在下面这步报 ENEEDAUTH，届时回来逐字核对。
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# 最小权限：id-token 是 OIDC 换发布凭证所必需，其余一律只读。
+permissions:
+  id-token: write
+  contents: read
+
+# 同一 tag 重复触发时不并发，避免两个 publish 撞在一起。
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # trusted publishing 要求 npm CLI >= 11.5.1 且 Node >= 22.14；
+          # Node 24 自带的 npm 11 满足。
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          # 发布构建永远不要开依赖缓存（官方建议）。
+          package-manager-cache: false
+
+      # 本包没有任何构建步骤：发布的 src/*.mjs 就是仓库里的源码，
+      # @ff-labs/* 等依赖由使用者的 DSH profile 安装，所以这里不装 node_modules。
+      # 自测脚本只 import src/line-index.mjs，纯 Node 内置模块，零依赖可跑。
+
+      - name: tag 与 package.json 版本必须一致
+        run: |
+          set -euo pipefail
+          want="v$(node -p "require('./package.json').version")"
+          echo "package.json -> $want"
+          echo "git tag       -> $GITHUB_REF_NAME"
+          if [ "$want" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag '$GITHUB_REF_NAME' 与 package.json 版本 '$want' 不一致，已中止发布"
+            exit 1
+          fi
+
+      - name: 自测（算法内核 + 9 项断言）
+        run: node dev/hot-search-smoke.mjs
+
+      - name: 预览将打进 tarball 的文件
+        run: npm pack --dry-run
+
+      # 这里不需要 NODE_AUTH_TOKEN：npm CLI 检测到 OIDC 环境后会自动换取
+      # 一个短命的发布凭证，并自动附带 provenance 证明。
+      - name: 发布到 npm
+        run: npm publish
