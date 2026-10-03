@@ -5,6 +5,13 @@ node_modules/
 dev/.state/
 # stateDir 的旧默认值：往索引根里写 frecency，保险起见继续忽略
 .dsh-tools/
+# 凭据 / 密钥 —— 永不入库（本仓库是公开仓库，误提交等于泄露）
+# npm 账号恢复码、发布 token、.npmrc 里的 _authToken
+npm_recovery_codes.txt
+npm_recovery*.txt
+*recovery*codes*
+.npm-token*
+.npmrc
 *.log
 *.tgz
 .DS_Store
