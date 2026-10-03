@@ -10,7 +10,7 @@
 #   - id: hot-search
 #     config:
 #       roots:
-#         - path: D:\ObsidianNotes      # ← 换成你的库
+#         - path: D:\path\to\your-vault      # ← 换成你的库
 #           label: main
 #
 # 全部可配置项见 README 的「配置」一节。

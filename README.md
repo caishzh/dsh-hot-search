@@ -33,9 +33,9 @@ dsh --dump-config | Select-String hot-search
 - id: hot-search
   config:
     roots:
-      - path: D:\ObsidianNotes
+      - path: D:\path\to\your-vault
         label: main
-      - path: D:\notes\work
+      - path: D:\path\to\another\notes
         label: work
 ```
 
@@ -52,7 +52,7 @@ dsh --dump-config | Select-String hot-search
 | `refreshIntervalMs` | `120000` | 索引陈旧后自动重建的检查间隔；`0` = 不自动重建。**本 bundle 的 `cordis.patch.yml` 显式设成了 `60000`**，所以装完 `--dump-config` 看到的是 60 秒 |
 | `fuzzyMaxErrors` | `0` | 模糊匹配容错字数；`0` = 按词长自动（`len//4`，短于 4 字不自动容错） |
 | `watch` | `true` | FFF finder 是否文件监视（长驻进程建议开） |
-| `stateDir` | `""` | frecency/历史库的**根**目录；空 = `$DSH_HOME/hot-search`，再退化到系统 cache |
+| `stateDir` | `""` | frecency/历史库的**根**目录；空 = 先试 `$DSH_HOME/hot-search`，宿主进程里没有 `DSH_HOME` 时退化到系统 cache（Windows：`%LOCALAPPDATA%\dsh-hot-search`）。详见「权限与隐私」 |
 | `maxResults` | `50` | 单次返回上限 |
 | `promptSection` | `true` | 是否向系统提示注入用法说明 |
 
@@ -91,7 +91,8 @@ node dsh-hot-search\dev\hot-search-smoke.mjs
 ## 权限与隐私
 
 - **读**：只读 `roots` 下的、匹配 `extensions` 的文本文件，用于建内存索引。不传任何内容给网络。
-- **写**：只写自己的运行时状态（frecency、FFF 的 history 库），位置 = `stateDir`，默认 `$DSH_HOME/hot-search/<根目录名>-<路径哈希>`。**不会写进你被索引的仓库**，所以不会脏你的 `git status`。
+- **写**：只写自己的运行时状态（frecency、FFF 的 history 库），位置 = `stateDir`。**空值时按此顺序解析**：`$DSH_HOME/hot-search/<根目录名>-<路径哈希>` → 宿主进程没有 `DSH_HOME` 时退化到系统 cache 目录（Windows：`%LOCALAPPDATA%\dsh-hot-search\<根目录名>-<路径哈希>`）。
+  实测：DSH 宿主进程里**没有** `DSH_HOME`（那是 DSH 注入给 shell 子进程的），所以默认落在 `%LOCALAPPDATA%` 那条退化路径上；想固定位置就显式配 `stateDir`。**两条路径都不会写进你被索引的仓库**，所以不会脏你的 `git status`。
 - **网络**：插件本身零网络请求。
 - **原生依赖**：`hot_find`/`hot_grep` 依赖 Rust 原生库 `@ff-labs/fff-node`（含平台二进制）。加载失败时**不会崩**：`hot_find` 自动降级为内置子序列匹配，`hot_grep` 明确报错并指路 `hot_fuzzy`；`hot_fuzzy`/`hot_plan`/`hot_stats` 完全不依赖它。`hot_stats` 会显示降级原因。
 - **平台**：在 Windows x64 上实测。非 win-x64 平台需要 `@ff-labs/fff-node` 对应的平台二进制包；拿不到就走上面的降级路径。
