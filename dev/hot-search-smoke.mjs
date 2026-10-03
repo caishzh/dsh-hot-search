@@ -1,5 +1,9 @@
 // hot-search-smoke.mjs — 不进宿主，直接验证行索引内核的正确性与速度。
 // 关键对照：中文错字必须命中（FFF 做不到），短词默认不容错（避免噪声）。
+//
+// ⚠️ 这是「本机基准脚本」，**不是 CI 门禁**：下面硬编码了本机的笔记库
+//    D:\ObsidianNotes，换台机器（或 CI 的 Ubuntu）就没有这个库，索引 0 文件、
+//    断言会全挂。要跑 CI 门禁请用 dev/hot-search-selftest.mjs（自包含语料，任何机器结果一致）。
 import { RootIndex, searchIndex, planFromHits } from '../src/line-index.mjs';
 
 const cfg = {

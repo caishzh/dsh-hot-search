@@ -16,7 +16,7 @@ export const configSchema = Schema.object({
   ).default([]),
   /** 进入行索引的扩展名。 */
   extensions: Schema.array(Schema.string()).default([".md", ".txt", ".markdown"]),
-  /** 目录名排除表（前缀/精确匹配）。 */
+  /** 目录名排除表（与目录名精确匹配；`.` 开头的目录另行一律跳过）。 */
   excludeDirs: Schema.array(Schema.string()).default([
     ".obsidian", ".trash", ".git", ".github", "node_modules",
     ".dsh-tools", ".dsh", "__pycache__", ".venv", "venv", "dist", "build",

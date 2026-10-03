@@ -1,6 +1,6 @@
 {
   "name": "dsh-hot-search",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Resident hot search for DSH: FFF-backed fuzzy filename + indexed grep + CJK typo-tolerant content search, all in the host process (no per-query process spawn).",
   "main": "src/index.mjs",

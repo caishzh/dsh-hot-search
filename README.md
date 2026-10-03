@@ -49,7 +49,7 @@ dsh --dump-config | Select-String hot-search
 | `excludeDirs` | 见 `src/config.mjs` | 目录名排除表（精确匹配；`.` 开头的一律跳过） |
 | `maxFileSize` | `2 MiB` | 单文件超过就不入索引 |
 | `maxIndexedBytes` | `64 MiB` | 每个根的总预算，防止大库吃满内存 |
-| `refreshIntervalMs` | `120000` | 索引陈旧后自动重建的检查间隔；`0` = 不自动重建 |
+| `refreshIntervalMs` | `120000` | 索引陈旧后自动重建的检查间隔；`0` = 不自动重建。**本 bundle 的 `cordis.patch.yml` 显式设成了 `60000`**，所以装完 `--dump-config` 看到的是 60 秒 |
 | `fuzzyMaxErrors` | `0` | 模糊匹配容错字数；`0` = 按词长自动（`len//4`，短于 4 字不自动容错） |
 | `watch` | `true` | FFF finder 是否文件监视（长驻进程建议开） |
 | `stateDir` | `""` | frecency/历史库的**根**目录；空 = `$DSH_HOME/hot-search`，再退化到系统 cache |

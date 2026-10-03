@@ -58,8 +58,11 @@ jobs:
             exit 1
           fi
 
-      - name: 自测（算法内核 + 9 项断言）
-        run: node dev/hot-search-smoke.mjs
+      # 自包含自测：临时目录里造固定语料，跑完即删，不依赖本机任何路径。
+      # 注意别换成 dev/hot-search-smoke.mjs —— 那个是「本机基准」，硬编码
+      # D:\ObsidianNotes，在 CI 上会索引 0 文件、断言全挂（v0.1.1 第一轮就栽在这）。
+      - name: 自测（自包含语料，零依赖）
+        run: node dev/hot-search-selftest.mjs
 
       - name: 预览将打进 tarball 的文件
         run: npm pack --dry-run
