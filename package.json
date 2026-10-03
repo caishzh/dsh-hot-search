@@ -41,11 +41,11 @@
   "author": "KitaKitaCirillasz",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KitaKitaCirillasz/dsh-hot-search.git"
+    "url": "git+https://github.com/caishzh/dsh-hot-search.git"
   },
-  "homepage": "https://github.com/KitaKitaCirillasz/dsh-hot-search#readme",
+  "homepage": "https://github.com/caishzh/dsh-hot-search#readme",
   "bugs": {
-    "url": "https://github.com/KitaKitaCirillasz/dsh-hot-search/issues"
+    "url": "https://github.com/caishzh/dsh-hot-search/issues"
   },
   "publishConfig": {
     "access": "public"
