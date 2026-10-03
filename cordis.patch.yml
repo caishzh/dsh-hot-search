@@ -1,0 +1,23 @@
+# dsh-hot-search — bundle patch。
+#
+# 只负责挂载一行：工具和行索引都活在这个 host 进程里，查询不再付进程启动成本。
+#
+# roots 刻意留空：装上就直接可用（未配置时索引 DSH 工作区 / 进程 cwd），
+# 也避免把发布者的机器路径带给别人。要索引自己的笔记库，在你 profile 的
+# cordis.patch.yml 里追加下面这段即可 —— DSH 的 patch 方言只有 insert，
+# 带 id 的条目是「按 id 覆盖这一行」，config 是整体替换而不是深合并：
+#
+#   - id: hot-search
+#     config:
+#       roots:
+#         - path: D:\ObsidianNotes      # ← 换成你的库
+#           label: main
+#
+# 全部可配置项见 README 的「配置」一节。
+- insert:
+    - id: hot-search
+      name: dsh-hot-search
+      config:
+        roots: []
+        refreshIntervalMs: 60000
+        watch: true

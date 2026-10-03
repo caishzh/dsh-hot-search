@@ -1,0 +1,11 @@
+node_modules/
+# 旧 pnpm 布局/换 linker 时留下的旁路目录（沙箱里删不掉，只能改名）
+.nm-stale-*
+.node_modules.stale*
+dev/.state/
+# stateDir 的旧默认值：往索引根里写 frecency，保险起见继续忽略
+.dsh-tools/
+*.log
+*.tgz
+.DS_Store
+Thumbs.db
